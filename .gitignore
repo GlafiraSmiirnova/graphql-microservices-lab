@@ -1,0 +1,18 @@
+# Node.js
+node_modules/
+*.log
+.env
+.DS_Store
+
+# Docker volumes
+pgdata-*/
+mongo-orders/
+
+# Vite/React
+dist/
+.vite/
+
+# IDE/OS
+.vscode/
+*.swp
+*.swo

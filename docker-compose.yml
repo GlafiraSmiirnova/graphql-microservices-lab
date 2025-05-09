@@ -1,0 +1,91 @@
+version: "3.9"
+
+services:
+  postgres-users:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: usersdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata-users:/var/lib/postgresql/data
+
+  postgres-products:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: product
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: productsdb
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata-products:/var/lib/postgresql/data
+
+  mongodb-orders:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-orders:/data/db
+
+  users-service:
+    build: ./users-service
+    ports:
+      - "4001:4001"
+    volumes:
+      - ./users-service:/app
+    depends_on:
+      - postgres-users
+
+  products-service:
+    build: ./products-service
+    ports:
+      - "4002:4002"
+    volumes:
+      - ./products-service:/app
+    depends_on:
+      - postgres-products
+
+  orders-service:
+    build: ./orders-service
+    ports:
+      - "4003:4003"
+    volumes:
+      - ./orders-service:/app
+    depends_on:
+      - mongodb-orders
+    networks:
+      - default
+
+  gateway:
+    build: ./gateway
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./gateway:/app
+    depends_on:
+      - users-service
+      - products-service
+      - orders-service
+    networks:
+      - default
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+    command: npm run dev -- --host
+    depends_on:
+      - gateway
+
+volumes:
+  pgdata-users:
+  pgdata-products:
+  mongo-orders:
+
+networks:
+  default:
