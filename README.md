@@ -124,7 +124,3 @@ PORT=4002
 MONGODB_URI=mongodb://mongodb-orders:27017/ordersdb
 PORT=4003
 ```
-
-## Видео
-
-Демо-ролик с работой системы: \[ссылка]
